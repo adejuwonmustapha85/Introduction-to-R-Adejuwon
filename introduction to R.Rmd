@@ -1,0 +1,325 @@
+---
+title: "Learning R with Kalekye"
+author: "Kalekye"
+date: ""
+output:
+  word_document:
+    number_sections: true
+editor_options: 
+  markdown: 
+    wrap: 72
+
+#bibliography: Senegal_SCH.bib
+#link-citations: true
+---
+1. Signs
+
+- Equals to (==)
+- Not equal to (!=)
+- Greater than (>)
+- Less than (<)
+- Greater than or equal to (>=)
+- Less than or equal to (<=)
+
+2. Operators
+AND (&)
+OR (|)
+
+
+3. R if
+- They are commonly used in if statements
+- if statement is used to specify a block of code to be executed if a condition is TRUE
+- {} are used to define the scope of a code/ function
+
+```{r}
+a <- 30
+b <- 220
+
+if (b > a){
+  print("b is greater than a")
+}
+```
+
+4. else if - you are telling R that if the previous conditions were not true, then try this other condition
+
+```{r}
+a <- 30
+b <- 30
+
+if (b > a){
+  print("b is greater than a")
+} else if (a == b) {
+  print("b is equal to a")
+}
+```
+
+5. if...else - capture anything not captured by if... and else if...
+- if...else can work without else if
+
+```{r}
+a <- 30
+b <- 220
+
+if (b < a) {
+  print("b is less than a")
+}  else{
+  print("b is greater than a")
+}
+```
+
+6. AND and OR operators - they are logical operators and are used to combine conditional statements
+
+```{r}
+a <- 30
+b <- 220
+c <- 400
+
+if (b > a & c > a) {
+  print("both conditions are TRUE")
+}
+
+```
+
+```{r}
+a <- 30
+b <- 220
+c <- 400
+
+if (b < a | c > a) {
+  print("either conditions is TRUE")
+}
+```
+
+7. while loop - executes a statement as long as the condition is TRUE
+- print i as long as i < 6
+
+```{r}
+i <- 1
+while(i < 6){
+  print(i)
+  i <- i+1
+}
+```
+
+- we can combine while loop with if...else function
+- print play a game football if the player number is 6
+
+```{r}
+player <- 1
+while(player <= 6){
+  if (player < 6){
+    print("No football")
+  }else{
+    print("play a game football")
+  }
+  player <- player + 1
+}
+```
+
+8. For loop - used to perform iteration
+
+```{r}
+for(x in 1:10){
+  print(x)
+}
+```
+
+- nest a if...else with a for loop
+
+```{r}
+dice <- 1:10
+for(x in dice){
+  if (x == 6){
+    print(paste("The dice is", x, "football"))
+  } else{
+    print(paste("The dice is", x, "not football"))
+  }
+}
+```
+
+9. Functions - a block of code that runs when called
+- We specify parameters (data)
+- use function() to create
+
+```{r}
+my_function <- function(){
+  print("hello")
+}
+my_function()
+
+```
+
+- when calling a function, specify same number arguments as supplied
+
+```{r}
+my_function1 <- function(fname, mname ,lname){
+  paste(fname, mname, lname)
+}
+
+my_function1("Joy", "Kalekye", "Joy")
+```
+
+
+# Session 4
+
+- installing and using R packages
+- for installation, you need internet
+- install a package once
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+
+
+#install package AMR
+
+install.packages("AMR")
+library(AMR)
+```
+
+## data
+
+_ We have in built data sets and we can also load our onw datasets to R
+
+### Inbuilt datasets
+- We use the function data() to access see the datasets in base R
+
+```{r}
+data()
+```
+
+- some datasets need packages to access
+
+```{r}
+#accessing iris
+iris
+DNase
+```
+
+### Loading data from computer
+
+- First set your working directory using setwd() or get your working directory using getwd()
+
+- We can have data in .csv or .xlsx
+
+# Load .csv file
+
+```{r}
+d1 <- read.csv("dataset_class4.csv")
+```
+
+# manipulate data
+
+- We can view the contents of d1
+
+```{r}
+View(d1)
+
+colnames(d1)
+```
+
+
+```{r}
+#first 6 rows of the data
+head(d1)
+```
+```{r}
+#last 6 rows of the data
+tail(d1)
+```
+
+```{r}
+library(tidyverse)
+
+glimpse(d1)
+```
+```{r}
+typeof(d1$minutes_to_nearest_facility)
+```
+```{r}
+dim(d1)
+```
+
+
+```{r}
+attributes(d1)
+```
+
+```{r}
+summary(d1)
+```
+
+```{r}
+is.character(d1$smoker)
+```
+
+```{r}
+table(d1$residence)
+```
+
+- look at smoke status by residence
+
+```{r}
+table( d1$county, d1$residence, d1$smoker)
+```
+
+```{r}
+#install.packages("arsenal")
+library(arsenal)
+
+d3 <- tableby(county ~ residence + smoker + mode_transport_to_nearest_facility, data = d1)
+
+summary(d3)
+```
+
+```{r}
+class(as.factor(d1$residence))
+```
+
+```{r}
+#we are changing/ recoding column residence; rural to be 1 and urban to be 2 and changing back
+d1$residence <- ifelse(d1$residence == "rural", 1, 2)
+
+d1$residence <- ifelse(d1$residence == 1, "rural", "urban")
+
+View(d1)
+
+table(d1$residence)
+```
+
+- select() - in package dplyr, helps us to select columns in a data frame
+- pipe ( |> ) - control+shift+m
+
+```{r}
+library(tidyverse)
+
+d2 <- d1 |> 
+  select(county, residence, smoker)
+
+dim(d2)
+```
+
+```{r}
+d3 <- d1 |> 
+  select(-c(residence, smoker))
+
+dim(d3)
+```
+
+- Merge data, d2 and d3. 
+- We use the function merge()
+- To join the two data sets, we need to have common column name
+
+```{r}
+d4 <- merge(d2, d3, by.x = "county", by.y = "county", all.x = TRUE)
+
+dim(d4)
+```
+
+
+# mutate() - which is used to create new columns
+#rename()
+
+#visualization
+#statistical modeling
+
